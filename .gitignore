@@ -1,0 +1,8 @@
+dist/
+node_modules/
+.vercel/
+.env
+.env.*
+.codex/
+.agents/
+*.log

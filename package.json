@@ -1,0 +1,12 @@
+{
+  "name": "compas-guitarra",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node --check src/app.js",
+    "dev": "python3 -m http.server 8000"
+  },
+  "engines": { "node": ">=22" }
+}
