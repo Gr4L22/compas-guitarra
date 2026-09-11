@@ -2,7 +2,7 @@ name: Publicar Compás
 
 on:
   push:
-    branches: [main, master, codex/import-chord-sheet]
+    branches: [main, master, codex/import-chord-sheet, codex/chord-diagnostics]
   workflow_dispatch:
 
 permissions:
@@ -26,6 +26,11 @@ jobs:
         with:
           ref: codex/import-chord-sheet
           path: importer
+      - name: Descargar vista previa de diagnóstico
+        uses: actions/checkout@v6
+        with:
+          ref: codex/chord-diagnostics
+          path: diagnostic
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -35,11 +40,15 @@ jobs:
       - name: Verificar y generar importador
         working-directory: importer
         run: npm run check && npm run build
-      - name: Combinar los dos sitios
+      - name: Verificar y generar diagnóstico
+        working-directory: diagnostic
+        run: npm run check && npm run build
+      - name: Combinar los tres sitios
         run: |
-          mkdir -p combined/importador
+          mkdir -p combined/importador combined/diagnostico
           cp -R production/dist/. combined/
           cp -R importer/dist/. combined/importador/
+          cp -R diagnostic/dist/. combined/diagnostico/
       - uses: actions/upload-pages-artifact@v4
         with:
           path: combined
