@@ -2,7 +2,7 @@ name: Publicar Compás
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, codex/import-chord-sheet]
   workflow_dispatch:
 
 permissions:
@@ -16,15 +16,33 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Descargar producción
+        uses: actions/checkout@v6
+        with:
+          ref: master
+          path: production
+      - name: Descargar vista previa del importador
+        uses: actions/checkout@v6
+        with:
+          ref: codex/import-chord-sheet
+          path: importer
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm run check
-      - run: npm run build
+      - name: Verificar y generar producción
+        working-directory: production
+        run: npm run check && npm run build
+      - name: Verificar y generar importador
+        working-directory: importer
+        run: npm run check && npm run build
+      - name: Combinar los dos sitios
+        run: |
+          mkdir -p combined/importador
+          cp -R production/dist/. combined/
+          cp -R importer/dist/. combined/importador/
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: dist
+          path: combined
 
   deploy:
     needs: build
