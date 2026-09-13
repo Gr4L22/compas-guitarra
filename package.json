@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "node --check src/app.js",
+    "check": "node --check src/game.js && node --check src/pitch.js && node scripts/test-pitch.mjs && node scripts/test-game.mjs",
     "dev": "python3 -m http.server 8000"
   },
   "engines": { "node": ">=22" }
