@@ -2,7 +2,7 @@ name: Publicar Compás
 
 on:
   push:
-    branches: [main, master, codex/import-chord-sheet, codex/chord-diagnostics]
+    branches: [main, master, codex/import-chord-sheet, codex/chord-diagnostics, codex/interactive-practice]
   workflow_dispatch:
 
 permissions:
@@ -31,6 +31,11 @@ jobs:
         with:
           ref: codex/chord-diagnostics
           path: diagnostic
+      - name: Descargar práctica interactiva
+        uses: actions/checkout@v6
+        with:
+          ref: codex/interactive-practice
+          path: interactive
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -43,12 +48,16 @@ jobs:
       - name: Verificar y generar diagnóstico
         working-directory: diagnostic
         run: npm run check && npm run build
-      - name: Combinar los tres sitios
+      - name: Verificar y generar práctica interactiva
+        working-directory: interactive
+        run: npm run check && npm run build
+      - name: Combinar las cuatro vistas
         run: |
-          mkdir -p combined/importador combined/diagnostico
+          mkdir -p combined/importador combined/diagnostico combined/interactivo
           cp -R production/dist/. combined/
           cp -R importer/dist/. combined/importador/
           cp -R diagnostic/dist/. combined/diagnostico/
+          cp -R interactive/dist/. combined/interactivo/
       - uses: actions/upload-pages-artifact@v4
         with:
           path: combined
